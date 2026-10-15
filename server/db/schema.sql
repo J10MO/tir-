@@ -75,6 +75,15 @@ CREATE TABLE IF NOT EXISTS order_items (
   qty          INT NOT NULL CHECK (qty > 0)
 );
 
+-- Admin-uploaded photos live in the database so they survive restarts on hosts
+-- with temporary disks (Render free tier).
+CREATE TABLE IF NOT EXISTS images (
+  id         SERIAL PRIMARY KEY,
+  mime       TEXT NOT NULL,
+  data       BYTEA NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 CREATE INDEX IF NOT EXISTS idx_products_category ON products(category_id);
 CREATE INDEX IF NOT EXISTS idx_variants_product ON variants(product_id);
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);

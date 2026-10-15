@@ -1,13 +1,10 @@
 import { Router } from 'express';
 import multer from 'multer';
-import path from 'node:path';
-import crypto from 'node:crypto';
 import { query, tx } from '../db.js';
 import { handle, HttpError, requireFields, slugify } from '../lib/http.js';
 import { requireAdmin } from '../lib/auth.js';
 import { listProducts, getProduct } from '../lib/catalog.js';
 import { withItems } from './orders.js';
-import { UPLOAD_DIR } from '../paths.js';
 
 const router = Router();
 router.use(requireAdmin);
@@ -224,19 +221,16 @@ router.post('/categories', handle(async (req, res) => {
 /* ---------- Image uploads ---------- */
 
 const upload = multer({
-  storage: multer.diskStorage({
-    destination: UPLOAD_DIR,
-    filename: (_req, file, cb) =>
-      cb(null, `${Date.now()}-${crypto.randomBytes(4).toString('hex')}${path.extname(file.originalname).toLowerCase()}`),
-  }),
+  storage: multer.memoryStorage(),
   limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (_req, file, cb) =>
     cb(/^image\/(jpeg|png|webp)$/.test(file.mimetype) ? null : new HttpError(400, 'ارفع صورة بصيغة JPG أو PNG أو WEBP'), true),
 });
 
-router.post('/uploads', upload.single('image'), (req, res) => {
+router.post('/uploads', upload.single('image'), handle(async (req, res) => {
   if (!req.file) throw new HttpError(400, 'اختر صورة لرفعها');
-  res.status(201).json({ url: `/uploads/${req.file.filename}` });
-});
+  const { rows } = await query('INSERT INTO images (mime, data) VALUES ($1, $2) RETURNING id', [req.file.mimetype, req.file.buffer]);
+  res.status(201).json({ url: `/api/images/${rows[0].id}` });
+}));
 
 export default router;

@@ -21,13 +21,27 @@
    ```
    المتجر: http://localhost:5173 ، لوحة الإدارة: http://localhost:5173/admin
 
-## للنشر
+## النشر المجاني: Neon + Render
 
-```
-npm run build
-npm start
-```
-الخادم يقدّم الواجهة المبنية من `client/dist` على نفس المنفذ (4000 افتراضياً).
+**1. قاعدة البيانات على Neon**
+- أنشئ مشروعاً على https://neon.tech (اختر منطقة Frankfurt، الأقرب للعراق).
+- انسخ **Connection string** من لوحة Neon (يبدأ بـ `postgresql://` وينتهي بـ `?sslmode=require`).
+- جهّز الجداول والمنتجات وحساب الإدارة مرة واحدة من جهازك:
+  ```
+  cd server
+  DATABASE_URL="<رابط Neon>" ADMIN_PHONE=07XXXXXXXXX ADMIN_PASSWORD="<كلمة قوية>" npm run db:setup
+  DATABASE_URL="<رابط Neon>" ADMIN_PHONE=07XXXXXXXXX ADMIN_PASSWORD="<كلمة قوية>" npm run db:seed
+  ```
+
+**2. الموقع على Render**
+- في https://dashboard.render.com اختر **New → Blueprint** واربط مستودع GitHub هذا.
+- يقرأ Render ملف `render.yaml` وينشئ خدمة مجانية واحدة تبني الواجهة وتشغّل الخادم.
+- عندما يطلب `DATABASE_URL` الصق رابط Neon. `JWT_SECRET` يُولَّد تلقائياً.
+
+ملاحظات:
+- الخطة المجانية في Render تنام بعد 15 دقيقة بلا زيارات، وأول زيارة بعدها تأخذ نحو دقيقة.
+- الصور التي ترفعها من لوحة الإدارة تُحفظ في قاعدة البيانات، لأن قرص Render المجاني يُمسح عند كل تشغيل.
+- الجداول تُنشأ تلقائياً عند تشغيل الخادم إذا لم تكن موجودة.
 
 ## ما يحتويه
 

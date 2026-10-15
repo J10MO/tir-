@@ -1,15 +1,9 @@
-// Seeds categories, the launch products with their photos, and the first admin.
+// Seeds categories, the launch products, and the first admin.
+// Product photos live in db/seed-images and are served at /uploads/products/.
 // Safe to re-run: it skips anything that already exists.
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import bcrypt from 'bcryptjs';
 import { pool, tx } from '../src/db.js';
-import { UPLOAD_DIR } from '../src/paths.js';
 
-const here = path.dirname(fileURLToPath(import.meta.url));
-const photoSrc = path.join(here, 'seed-images');
-const photoDir = path.join(UPLOAD_DIR, 'products');
 
 const CATEGORIES = [
   ['sport', 'رياضي'],
@@ -66,8 +60,6 @@ const PRODUCTS = [
 
 const STOCK = 5;
 
-fs.mkdirSync(photoDir, { recursive: true });
-
 await tx(async client => {
   for (const [i, [slug, name]] of CATEGORIES.entries()) {
     await client.query('INSERT INTO categories (slug, name, sort) VALUES ($1, $2, $3) ON CONFLICT (slug) DO NOTHING', [slug, name, i]);
@@ -85,7 +77,6 @@ await tx(async client => {
       [p.slug, p.name, p.description, p.price, p.compare ?? null, catId[p.category], p.featured, i]);
 
     for (const [j, [colorName, hex, photo]] of p.colors.entries()) {
-      fs.copyFileSync(path.join(photoSrc, `${photo}.webp`), path.join(photoDir, `${photo}.webp`));
       const { rows: [color] } = await client.query(
         'INSERT INTO product_colors (product_id, name, hex, images, sort) VALUES ($1, $2, $3, $4, $5) RETURNING id',
         [prod.id, colorName, hex, [`/uploads/products/${photo}.webp`], j]);

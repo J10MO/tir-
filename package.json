@@ -1,6 +1,7 @@
 {
   "name": "tir",
   "private": true,
+  "engines": { "node": ">=22.9" },
   "scripts": {
     "install:all": "npm --prefix server install && npm --prefix client install",
     "setup": "npm --prefix server run db:setup && npm --prefix server run db:seed",
