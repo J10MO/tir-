@@ -1,8 +1,13 @@
 import jwt from 'jsonwebtoken';
 import { HttpError } from './http.js';
 
-const SECRET = process.env.JWT_SECRET || 'dev-only-secret';
+const hosted = process.env.RENDER || process.env.NODE_ENV === 'production';
+if (!process.env.JWT_SECRET && hosted) {
+  console.error("JWT_SECRET is not set. Add it to the host environment variables (any long random string).");
+  process.exit(1);
+}
 if (!process.env.JWT_SECRET) console.warn('JWT_SECRET is not set; using an insecure development secret.');
+const SECRET = process.env.JWT_SECRET || 'dev-only-secret';
 
 export const signToken = user => jwt.sign({ id: user.id, role: user.role, name: user.name }, SECRET, { expiresIn: '30d' });
 
