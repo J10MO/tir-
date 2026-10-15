@@ -3,6 +3,7 @@ import { money } from '../lib/format.js';
 import { useFavorites } from '../context/FavoritesContext.jsx';
 import Icon from './Icon.jsx';
 import { sizeSummary } from '../lib/sizes.js';
+import { useChildSize } from '../context/ChildSizeContext.jsx';
 
 export function FavButton({ slug, name, className = 'fav' }) {
   const fav = useFavorites();
@@ -25,6 +26,8 @@ export default function ProductCard({ product }) {
   const soldOut = product.total_stock === 0;
   const onSale = product.compare_at_price && !soldOut;
   const fewLeft = !soldOut && product.total_stock <= 8;
+  const { size: childSize } = useChildSize();
+  const fits = childSize && product.sizes.includes(childSize);
 
   return (
     <article className="card">
@@ -34,7 +37,8 @@ export default function ProductCard({ product }) {
           {second?.image && <img className="alt" src={second.image} alt="" loading="lazy" width="1200" height="900" />}
           {soldOut && <span className="tag out">نفدت الكمية</span>}
           {onSale && <span className="tag">تخفيض</span>}
-          {!onSale && fewLeft && <span className="tag soft">آخر القطع</span>}
+          {!onSale && fits && <span className="tag fit"><Icon name="check" size={14} /> يناسب طفلك</span>}
+          {!onSale && !fits && fewLeft && <span className="tag soft">آخر القطع</span>}
         </div>
         <h3>{product.name}</h3>
         <p className="card-price">

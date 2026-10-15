@@ -5,6 +5,7 @@ import { CartProvider } from './context/CartContext.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 import { FavoritesProvider } from './context/FavoritesContext.jsx';
 import { ToastProvider } from './context/ToastContext.jsx';
+import { ChildSizeProvider } from './context/ChildSizeContext.jsx';
 import App from './App.jsx';
 import './styles/app.css';
 
@@ -15,7 +16,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <CartProvider>
           <FavoritesProvider>
             <ToastProvider>
-              <App />
+              <ChildSizeProvider>
+                <App />
+              </ChildSizeProvider>
             </ToastProvider>
           </FavoritesProvider>
         </CartProvider>

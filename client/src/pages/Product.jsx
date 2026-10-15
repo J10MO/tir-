@@ -9,6 +9,7 @@ import { FavButton, Rail } from '../components/ProductCard.jsx';
 import Icon from '../components/Icon.jsx';
 import SizeGuide from '../components/SizeGuide.jsx';
 import { ageFor, sizeSummary } from '../lib/sizes.js';
+import { useChildSize } from '../context/ChildSizeContext.jsx';
 
 export default function Product() {
   const { slug } = useParams();
@@ -18,6 +19,7 @@ export default function Product() {
   const toast = useToast();
   const navigate = useNavigate();
   const sizesRef = useRef(null);
+  const { size: childSize } = useChildSize();
 
   const [colorId, setColorId] = useState(null);
   const [variantId, setVariantId] = useState(null);
@@ -25,8 +27,14 @@ export default function Product() {
   const [guide, setGuide] = useState(false);
 
   useEffect(() => {
-    if (product) { setColorId(product.colors[0]?.id ?? null); setVariantId(null); setMessage(''); }
-  }, [product]);
+    if (!product) return;
+    const first = product.colors[0];
+    // Pick the remembered child size straight away when it's in stock.
+    const fit = first?.variants.find(v => v.size === childSize && v.stock > 0);
+    setColorId(first?.id ?? null);
+    setVariantId(fit?.id ?? null);
+    setMessage('');
+  }, [product]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { if (product) document.title = `${product.name} | تير`; }, [product]);
 

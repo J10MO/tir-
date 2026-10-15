@@ -5,10 +5,12 @@ import { useApi } from '../lib/useApi.js';
 import { money, date, pairs } from '../lib/format.js';
 import { StatusBadge } from '../components/Status.jsx';
 import Icon from '../components/Icon.jsx';
+import { useChildSize } from '../context/ChildSizeContext.jsx';
 
 export default function Account() {
   const { user, ready, logout } = useAuth();
   const { slugs } = useFavorites();
+  const { size: childSize } = useChildSize();
   const navigate = useNavigate();
   const orders = useApi(user ? '/orders/mine' : null);
 
@@ -28,7 +30,7 @@ export default function Account() {
       <nav className="menu-list" aria-label="حسابي">
         <Link to="/favorites"><Icon name="heart" /> المفضلة <span className="muted">{slugs.length || ''}</span><Icon name="forward" size={18} /></Link>
         <Link to="/track"><Icon name="box" /> تتبّع طلب برقمه <span /><Icon name="forward" size={18} /></Link>
-        <Link to="/sizes"><Icon name="ruler" /> دليل المقاسات <span /><Icon name="forward" size={18} /></Link>
+        <Link to="/sizes"><Icon name="ruler" /> مقاس طفلي <span className="muted">{childSize || 'لم يُحفظ بعد'}</span><Icon name="forward" size={18} /></Link>
         {user.role === 'admin' && <Link to="/admin"><Icon name="dashboard" /> لوحة الإدارة <span /><Icon name="forward" size={18} /></Link>}
         <button type="button" onClick={() => { logout(); navigate('/'); }}><Icon name="logout" /> تسجيل الخروج <span /></button>
       </nav>

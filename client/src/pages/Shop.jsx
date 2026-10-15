@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { useApi } from '../lib/useApi.js';
 import { ProductGrid } from './Home.jsx';
 import Icon from '../components/Icon.jsx';
+import { useChildSize } from '../context/ChildSizeContext.jsx';
 
 export default function Shop() {
   const [params, setParams] = useSearchParams();
@@ -12,6 +13,7 @@ export default function Shop() {
   const q = params.get('q') || '';
   const [text, setText] = useState(q);
   const searchRef = useRef(null);
+  const { size: childSize } = useChildSize();
 
   const categories = useApi('/categories');
   const everything = useApi('/products');
@@ -73,6 +75,11 @@ export default function Shop() {
       <div className="size-chips" role="group" aria-label="المقاس">
         <span className="size-chips-label"><Icon name="ruler" size={18} /> المقاس</span>
         <button type="button" className="chip small" aria-pressed={!size} onClick={() => set('size', '')}>الكل</button>
+        {childSize && (
+          <button type="button" className="chip small mine" aria-pressed={size === String(childSize)} onClick={() => set('size', String(childSize))}>
+            مقاس طفلي {childSize}
+          </button>
+        )}
         {sizes.map(s => (
           <button key={s} type="button" className="chip small" aria-pressed={size === String(s)} onClick={() => set('size', size === String(s) ? '' : String(s))}>{s}</button>
         ))}

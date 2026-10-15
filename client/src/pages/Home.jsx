@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
 import { useApi } from '../lib/useApi.js';
 import { money } from '../lib/format.js';
-import { SIZE_CHART } from '../lib/sizes.js';
 import ProductCard, { Rail } from '../components/ProductCard.jsx';
 import HeroCarousel from '../components/HeroCarousel.jsx';
+import FootMeasure from '../components/FootMeasure.jsx';
 import Icon from '../components/Icon.jsx';
 import { INSTAGRAM } from '../components/Footer.jsx';
 
@@ -18,7 +18,6 @@ export default function Home() {
   const cats = (categories.data ?? []).filter(c => c.product_count > 0);
   const featured = products.filter(p => p.is_featured);
   const newest = [...products].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 8);
-  const inStock = size => products.filter(p => p.sizes.includes(size)).length;
 
   const ishtar = find(products, 'ishtar');
   const nineveh = find(products, 'nineveh');
@@ -27,13 +26,13 @@ export default function Home() {
   const slides = [
     ishtar && {
       id: 'hero', tone: 'lime', kicker: 'Ancient threads, modern weaves', title: 'خيوط قديمة، نسيج حديث',
-      text: `أحذية أطفال بنعل مريح وخامات تتحمّل اللعب. ${ishtar.name} بـ ${money(ishtar.price)}.`,
+      text: 'أحذية أطفال بنعل مريح وخامات تتحمّل اللعب، من 18 إلى 30، والدفع عند الاستلام.',
       cta: 'تسوّق الآن', to: '/shop', image: ishtar.colors[0]?.image,
     },
     nineveh && {
       id: 'craft', tone: 'paper', kicker: 'Step into modern craft', title: 'خطوة نحو الحِرفة الحديثة',
-      text: `${nineveh.name} أسود بالكامل، بنعل متموّج وأربطة حبل سميكة.`,
-      cta: `شاهد ${nineveh.name}`, to: `/p/${nineveh.slug}`, image: nineveh.colors[0]?.image,
+      text: `أسود بالكامل، بنعل متموّج وأربطة حبل سميكة. ${money(nineveh.price)}.`,
+      cta: 'شاهد الحذاء', to: `/p/${nineveh.slug}`, image: nineveh.colors[0]?.image,
     },
     firstStep && {
       id: 'first', tone: 'dark', kicker: 'First steps', title: 'لأول خطوة',
@@ -82,27 +81,7 @@ export default function Home() {
             : <Rail products={featured} label="اختيارات تير" />}
         </section>
 
-        <section className="block size-block" aria-labelledby="size-title">
-          <div className="block-head">
-            <h2 id="size-title">تسوّق حسب المقاس</h2>
-            <Link to="/sizes">دليل المقاسات</Link>
-          </div>
-          <p className="muted block-lede">اضغط على مقاس طفلك لترى كل الأحذية المتوفرة فيه.</p>
-          <div className="size-rail">
-            {SIZE_CHART.map(r => {
-              const n = inStock(r.size);
-              return n ? (
-                <Link key={r.size} to={`/shop?size=${r.size}`} className="size-cell">
-                  <b>{r.size}</b><span className="latin">{r.cm} cm</span><small>{plural(n)}</small>
-                </Link>
-              ) : (
-                <span key={r.size} className="size-cell off" aria-label={`مقاس ${r.size} غير متوفر حالياً`}>
-                  <b>{r.size}</b><span className="latin">{r.cm} cm</span><small>غير متوفر</small>
-                </span>
-              );
-            })}
-          </div>
-        </section>
+        <FootMeasure products={products} />
 
         <section className="block" aria-labelledby="new-title">
           <div className="block-head">

@@ -297,6 +297,68 @@ a.size-cell:hover { border-color: var(--lime); }
 @keyframes sheet-in { from { transform: translateY(24px); opacity: 0; } }
 @keyframes sheet-up { from { transform: translateY(100%); } }
 
+/* ---------- Foot measurer: the signature tool ----------
+   Paper ground like the campaign photos. The footprint grows from the heel
+   (RTL start) to the measured length; the ruler underneath is in centimetres. */
+.measure {
+  margin-top: clamp(36px, 5vw, 64px);
+  display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(260px, 1fr); grid-template-areas: "copy result" "board result";
+  column-gap: clamp(20px, 4vw, 56px); row-gap: 20px; align-items: center;
+  background: var(--paper); color: var(--ink); border-radius: var(--r-xl); padding: clamp(24px, 4vw, 52px);
+}
+.measure-copy { grid-area: copy; }
+.measure-copy h2 { font-size: var(--t-2xl); font-weight: 800; }
+.measure-copy p { margin-top: 6px; color: #55554F; max-width: 44ch; }
+.measure-board { grid-area: board; position: relative; padding-top: 40%; }
+.foot { position: absolute; bottom: 52px; inset-inline-start: 0; transition: width .12s linear; }
+.foot svg { width: 100%; height: auto; fill: var(--ink); }
+.foot::after {
+  /* toe line: where the measurement ends */
+  content: ""; position: absolute; top: -6px; bottom: -14px; inset-inline-end: 0;
+  border-inline-end: 2px dashed rgba(25,25,25,.55);
+}
+.ruler {
+  position: relative; height: 40px; margin-top: 10px;
+  border-top: 2px solid var(--ink);
+  background:
+    repeating-linear-gradient(to left, var(--ink) 0 1.5px, transparent 1.5px 5%) top / 100% 14px no-repeat,
+    repeating-linear-gradient(to left, rgba(25,25,25,.45) 0 1px, transparent 1px 2.5%) top / 100% 8px no-repeat;
+}
+.ruler span {
+  position: absolute; top: 16px; transform: translateX(50%);
+  font-size: 11px; font-weight: 600; color: #55554F; font-variant-numeric: tabular-nums;
+}
+.ruler span:first-child { transform: none; }
+.ruler span:last-child { transform: translateX(100%); }
+.measure-range {
+  position: absolute; inset: 0; width: 100%; height: 100%; margin: 0;
+  opacity: 0; cursor: ew-resize; direction: rtl;
+}
+.measure-board:has(.measure-range:focus-visible) { outline: 3px solid var(--ink); outline-offset: 8px; border-radius: 8px; }
+
+.measure-result { grid-area: result; align-self: stretch; display: flex; flex-direction: column; justify-content: center; gap: 12px; padding: 22px; background: #fff; border-radius: var(--r-lg); }
+.readout { display: flex; align-items: end; justify-content: space-between; gap: 12px; }
+.readout-cm { font-size: var(--t-lg); color: #55554F; }
+.readout-cm b { font-size: var(--t-2xl); color: var(--ink); font-weight: 700; }
+.readout-size { display: grid; justify-items: end; line-height: 1; }
+.readout-size small { font-size: var(--t-sm); color: #55554F; margin-bottom: 4px; }
+.readout-size b { font-size: clamp(3.5rem, 2.6rem + 3vw, 5rem); font-weight: 800; letter-spacing: -0.02em; }
+.readout-note { font-size: var(--t-sm); color: #45453F; }
+.measure-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.measure-actions .btn { flex: 1; min-height: 46px; font-size: var(--t-sm); }
+.measure :focus-visible { outline-color: var(--ink); }
+
+.page.narrow .measure { grid-template-columns: 1fr; grid-template-areas: "copy" "board" "result"; }
+.tag.fit { display: inline-flex; align-items: center; gap: 4px; background: var(--lime); color: var(--ink); }
+.chip.mine { border-color: var(--lime); color: var(--lime); }
+.chip.mine[aria-pressed="true"] { color: var(--ink); }
+
+@media (max-width: 760px) {
+  .measure { grid-template-columns: 1fr; grid-template-areas: "copy" "board" "result"; padding: 22px 18px 18px; border-radius: 24px; }
+  .measure-result { padding: 16px; }
+}
+@media (prefers-reduced-motion: reduce) { .foot { transition: none; } }
+
 /* ---------- Product cards ---------- */
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(196px, 1fr)); gap: 28px 18px; }
 .rail { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px; }

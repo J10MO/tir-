@@ -3,6 +3,7 @@ import { useApi } from '../lib/useApi.js';
 import { SIZE_CHART } from '../lib/sizes.js';
 import { SizeTable, HowToMeasure } from '../components/SizeGuide.jsx';
 import Icon from '../components/Icon.jsx';
+import FootMeasure from '../components/FootMeasure.jsx';
 
 export default function Sizes() {
   const all = useApi('/products');
@@ -13,8 +14,10 @@ export default function Sizes() {
       <h1 className="page-title">دليل المقاسات</h1>
       <p className="muted lead">مقاساتنا أوروبية من 18 إلى 30. قِس قدم طفلك واختر المقاس الذي يساوي طوله أو أكبر منه بقليل، ثم اضغط على المقاس لترى الأحذية المتوفرة فيه.</p>
 
-      <section className="sheet" aria-labelledby="measure-title" style={{ marginTop: 20 }}>
-        <h2 id="measure-title"><Icon name="ruler" size={20} /> كيف تقيس قدم طفلك</h2>
+      <div style={{ marginTop: 20 }}><FootMeasure products={all.data ?? []} /></div>
+
+      <section className="sheet" aria-labelledby="howto-title" style={{ marginTop: 20 }}>
+        <h2 id="howto-title"><Icon name="ruler" size={20} /> كيف تقيس قدم طفلك</h2>
         <HowToMeasure />
       </section>
 
